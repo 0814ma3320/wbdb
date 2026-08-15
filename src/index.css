@@ -1,0 +1,467 @@
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --social-bg: rgba(244, 243, 236, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --accent-bg: rgba(192, 132, 252, 0.15);
+    --accent-border: rgba(192, 132, 252, 0.5);
+    --social-bg: rgba(47, 48, 58, 0.5);
+    --shadow:
+      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+
+  #social .button-icon {
+    filter: invert(1) brightness(2);
+  }
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+@media (max-width: 768px) {
+  :root {
+    font-size: 15px;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 100%;
+    border-inline: none;
+  }
+
+  h1 {
+    font-size: 30px;
+    margin: 18px 0;
+    letter-spacing: -0.8px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  button,
+  input,
+  select {
+    font-size: 16px;
+  }
+
+  table {
+    font-size: 14px;
+  }
+}
+@media (max-width: 600px) {
+  .home-page {
+    padding: 25px 14px !important;
+  }
+
+  .home-menu {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .home-menu a {
+    min-height: 95px !important;
+    padding: 12px 8px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+  }
+
+  .home-menu a span {
+    margin-bottom: 6px !important;
+    font-size: 26px !important;
+  }
+}
+@media (max-width: 600px) {
+  .season-stats-page {
+    padding: 20px 12px !important;
+  }
+
+  .season-ranking-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .season-title-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .season-stats-page h1 {
+    font-size: 26px !important;
+  }
+
+  .season-stats-page h2 {
+    font-size: 19px !important;
+  }
+
+  .season-stats-page ol {
+    padding-left: 0 !important;
+  }
+}
+@media (max-width: 600px) {
+  .team-stats-page {
+    padding: 18px 12px !important;
+  }
+
+  .team-stats-page h1 {
+    font-size: 25px !important;
+    line-height: 1.25 !important;
+  }
+
+  .team-main-grid,
+  .team-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .team-record-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .team-stats-page section {
+    margin-top: 24px !important;
+  }
+}
+@media (max-width: 600px) {
+  .player-list-page {
+    padding: 18px 10px !important;
+  }
+
+  .player-list-page h1 {
+    font-size: 26px !important;
+  }
+
+  .player-list-page h2 {
+    font-size: 19px !important;
+    margin-top: 22px !important;
+  }
+
+  .player-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .player-table-scroll table {
+    min-width: 620px !important;
+    font-size: 13px !important;
+  }
+
+  .player-table-scroll th,
+  .player-table-scroll td {
+    padding: 8px 7px !important;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 600px) {
+  .game-list-page {
+    padding: 18px 10px !important;
+  }
+
+  .game-list-page h1 {
+    font-size: 25px !important;
+  }
+
+  .game-card {
+    padding: 14px !important;
+  }
+
+  .game-card-main {
+    gap: 10px !important;
+  }
+
+  .game-card-main > div:nth-child(2) {
+    min-width: 0 !important;
+    flex: 1 1 120px !important;
+    font-size: 16px !important;
+  }
+
+  .game-card-main > div:nth-child(3) {
+    min-width: 105px !important;
+    font-size: 23px !important;
+  }
+
+  .game-card-main a {
+    margin-left: 0 !important;
+  }
+
+  .game-card-main button {
+    padding: 7px 10px !important;
+  }
+}
+@media (max-width: 600px) {
+  .player-detail-page {
+    padding: 18px 10px !important;
+  }
+
+  .player-detail-page h1 {
+    font-size: 25px !important;
+    line-height: 1.25 !important;
+  }
+
+  .player-detail-page h2 {
+    font-size: 20px !important;
+  }
+
+  .player-stats-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .player-stats-scroll table {
+    min-width: 560px !important;
+    font-size: 13px !important;
+  }
+
+  .player-stats-scroll th,
+  .player-stats-scroll td {
+    min-width: 85px !important;
+    padding: 8px 7px !important;
+    white-space: nowrap;
+  }
+
+  .player-stats-scroll td {
+    font-size: 18px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .game-detail-page {
+    padding: 18px 10px !important;
+  }
+
+  .game-detail-page h1 {
+    font-size: 25px !important;
+  }
+
+  .game-score-board {
+    gap: 10px !important;
+  }
+
+  .game-score-board > div:first-child,
+  .game-score-board > div:last-child {
+    min-width: 100px !important;
+    font-size: 17px !important;
+  }
+
+  .game-score-board > div:nth-child(2),
+  .game-score-board > div:nth-child(4) {
+    font-size: 34px !important;
+  }
+
+  .game-score-board > div:nth-child(3) {
+    font-size: 24px !important;
+  }
+
+  .game-detail-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .game-detail-table-scroll table {
+    min-width: 620px !important;
+    font-size: 13px !important;
+  }
+
+  .game-detail-table-scroll th,
+  .game-detail-table-scroll td {
+    padding: 8px 7px !important;
+    white-space: nowrap;
+  }
+}
+@media (max-width: 600px) {
+  .awards-page {
+    padding: 18px 10px !important;
+  }
+
+  .awards-page h1 {
+    font-size: 25px !important;
+    line-height: 1.25 !important;
+  }
+
+  .awards-page section {
+    padding: 16px 12px !important;
+    margin-top: 18px !important;
+  }
+
+  .award-select-row {
+    display: block !important;
+    margin-bottom: 16px !important;
+  }
+
+  .award-select-row label {
+    display: block !important;
+    margin-bottom: 6px !important;
+  }
+
+  .award-select-row select {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 46px !important;
+    box-sizing: border-box !important;
+  }
+}
+@media (max-width: 600px) {
+  .season-management-page {
+    padding: 18px 10px !important;
+  }
+
+  .season-management-page h1 {
+    font-size: 25px !important;
+  }
+
+  .season-management-page section {
+    padding: 16px 12px !important;
+    margin-top: 18px !important;
+  }
+
+  .season-management-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .season-management-grid > div {
+    padding: 20px 14px !important;
+  }
+
+  .season-management-page button,
+  .season-management-page select,
+  .season-management-page a {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+@media (max-width: 600px) {
+  .season1-base-stats-page {
+    padding: 18px 10px !important;
+  }
+
+  .season1-base-stats-page h1 {
+    font-size: 25px !important;
+    line-height: 1.25 !important;
+  }
+
+  .season1-base-stats-page section {
+    margin-top: 22px !important;
+  }
+
+  .season1-base-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .season1-base-table-scroll table {
+    min-width: 1100px !important;
+    font-size: 13px !important;
+  }
+
+  .season1-base-table-scroll th,
+  .season1-base-table-scroll td {
+    white-space: nowrap;
+  }
+
+  .season1-base-table-scroll input {
+    width: 58px !important;
+    padding: 6px 4px !important;
+    font-size: 15px !important;
+  }
+}
