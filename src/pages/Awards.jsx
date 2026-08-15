@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { leaguePlayers } from "../data/LeaguePlayers";
+import { leaguePlayers } from "../data/leaguePlayers";
 
 import { getPlayersForSeason } from "../data/playerStorage";
 import {
