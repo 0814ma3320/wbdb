@@ -24,6 +24,7 @@ import Login from "./pages/Login";
 import { supabase } from "./supabase";
 import { useEffect, useState } from "react";
 import PostseasonStats from "./pages/PostseasonStats";
+import LineupStats from "./pages/LineupStats";
 
 function RequireAuth({ children }) {
   const [loading, setLoading] =
@@ -132,7 +133,10 @@ export default function App() {
   path="/awards"
   element={<Awards />}
 />
-
+<Route
+  path="/lineup-stats"
+  element={<LineupStats />}
+/>
 <Route
   path="/players/manage"
   element={<PlayerManagement />}

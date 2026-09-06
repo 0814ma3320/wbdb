@@ -93,8 +93,8 @@ const players = getPlayersForSeason(
         return {
           ...row,
           playerId: String(
-            selectedPlayer.number
-          ),
+  selectedPlayer.id
+),
           playerNumber:
             selectedPlayer.number,
           playerName: selectedPlayer.name,

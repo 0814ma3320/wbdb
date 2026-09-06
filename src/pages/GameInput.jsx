@@ -84,6 +84,7 @@ const calculatedOpponentScore =
     const newGame = {
   id: crypto.randomUUID(),
   season: getCurrentSeason(),
+  lineupStatsEnabled: true,
 
   date: `2011-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
   opponent,

@@ -146,6 +146,7 @@ export default function Home() {
       );
     }
   }
+  
   return (
   <div
     style={pageStyle}
@@ -235,7 +236,13 @@ export default function Home() {
   <span style={iconStyle}>📊</span>
   チーム成績
 </Link>
-
+<Link
+  to="/lineup-stats"
+  style={buttonStyle}
+>
+  <span style={iconStyle}>🧢</span>
+  スタメン集計
+</Link>
 <Link
   to="/awards"
   style={buttonStyle}
