@@ -1,9 +1,57 @@
 import { players as initialPlayers } from "./players";
+import { leaguePlayers } from "./leaguePlayers";
 
 const PLAYER_STORAGE_KEY = "wakagiri_players";
+function createInitialLeaguePlayers() {
+  return Object.entries(leaguePlayers).flatMap(
+    ([teamName, roster]) => [
+      ...(roster.fielders ?? []).map(
+        (name, index) => ({
+          id: `league-${teamName}-fielder-${index}`,
+          name,
+          teamName,
+          category: "野手",
+          active: true,
+          joinedSeason: 1,
+          leftSeason: null,
+          tenures: [
+            {
+              teamName,
+              joinedSeason: 1,
+              leftSeason: null,
+            },
+          ],
+          number: null,
+          position: null,
+        })
+      ),
+
+      ...(roster.pitchers ?? []).map(
+        (name, index) => ({
+          id: `league-${teamName}-pitcher-${index}`,
+          name,
+          teamName,
+          category: "投手",
+          active: true,
+          joinedSeason: 1,
+          leftSeason: null,
+          tenures: [
+            {
+              teamName,
+              joinedSeason: 1,
+              leftSeason: null,
+            },
+          ],
+          number: null,
+          position: null,
+        })
+      ),
+    ]
+  );
+}
 
 function createInitialPlayers() {
-  return initialPlayers.map((player) => ({
+  const bubblesPlayers = initialPlayers.map((player) => ({
     ...player,
     teamName: player.teamName ?? "和桐バブルス",
     active: player.active ?? true,
@@ -30,7 +78,12 @@ function createInitialPlayers() {
             player.leftSeason ?? null,
         },
       ],
-  }));
+    }));
+
+  return [
+    ...bubblesPlayers,
+    ...createInitialLeaguePlayers(),
+  ];
 }
 
 export function getPlayers() {
@@ -55,8 +108,24 @@ export function getPlayers() {
     if (!Array.isArray(parsedPlayers)) {
       throw new Error("選手データが配列ではありません");
     }
+    const existingIds = new Set(
+  parsedPlayers.map((player) =>
+    String(player.id)
+  )
+);
 
-    return parsedPlayers.map((player) => ({
+const missingLeaguePlayers =
+  createInitialLeaguePlayers().filter(
+    (player) =>
+      !existingIds.has(String(player.id))
+  );
+
+const mergedPlayers = [
+  ...parsedPlayers,
+  ...missingLeaguePlayers,
+];
+
+    return mergedPlayers.map((player) => ({
   ...player,
   teamName: player.teamName ?? "和桐バブルス",
   active: player.active ?? true,
