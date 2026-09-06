@@ -8,6 +8,7 @@ import {
   getViewingSeason,
   getGamesForSeason,
   getRegularSeasonGames,
+  getPostseasonGames,
 } from "../data/seasonStorage";
 import {
   formatBattingAverage,
@@ -66,11 +67,16 @@ const games = getGamesForSeason(
 );
 const regularGames =
   getRegularSeasonGames(games);
-
+const postseasonGames =
+  getPostseasonGames(games);
 const stats = getPlayerStats(
   regularGames,
   player,
   currentSeason
+);
+const postseasonStats = getPlayerStats(
+  postseasonGames,
+  player
 );
 
 const recentBattingStats =
@@ -168,6 +174,39 @@ const isPitcher =
     stats={stats}
     recentStats={recentBattingStats}
     recentLogs={recentBattingLogs}
+  />
+)}
+<h2 style={sectionTitleStyle}>
+  Postseason 成績
+</h2>
+
+{isPitcher ? (
+  <PitchingStats
+    stats={postseasonStats}
+    recentStats={getRecentPitchingStats(
+      postseasonGames,
+      player,
+      5
+    )}
+    recentLogs={getRecentPitchingGameLogs(
+      postseasonGames,
+      player,
+      5
+    )}
+  />
+) : (
+  <BattingStats
+    stats={postseasonStats}
+    recentStats={getRecentBattingStats(
+      postseasonGames,
+      player,
+      5
+    )}
+    recentLogs={getRecentBattingGameLogs(
+      postseasonGames,
+      player,
+      5
+    )}
   />
 )}
     </div>
