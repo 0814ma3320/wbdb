@@ -155,7 +155,9 @@ const postseasonPositionStats =
       )}
     </div>
   );
-  <h2>Postseason 守備位置別スタメン</h2>
+})}
+
+<h2>Postseason 守備位置別スタメン</h2>
 
 {[
   ["捕", "捕手"],
@@ -193,7 +195,7 @@ const postseasonPositionStats =
     </div>
   );
 })}
-})}
+
     </div>
   );
 }
