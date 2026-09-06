@@ -20,6 +20,16 @@ export default function GameInput() {
   const navigate = useNavigate();
 
   const [month, setMonth] = useState(3);
+  const currentSeason = getCurrentSeason();
+
+const [bubblesInnings, setBubblesInnings] =
+  useState(Array(12).fill(""));
+
+const [opponentInnings, setOpponentInnings] =
+  useState(Array(12).fill(""));
+
+const [showExtraInnings, setShowExtraInnings] =
+  useState(false);
 const [day, setDay] = useState(25);
   const [opponent, setOpponent] = useState("");
   const [homeAway, setHomeAway] = useState("home");
@@ -27,7 +37,26 @@ const [day, setDay] = useState(25);
   const [opponentScore, setOpponentScore] = useState("");
   const [error, setError] = useState("");
   const [gameType, setGameType] = useState("regular");
+const visibleInningCount =
+  showExtraInnings ? 12 : 9;
 
+const calculatedBubblesScore =
+  bubblesInnings
+    .slice(0, visibleInningCount)
+    .reduce(
+      (total, score) =>
+        total + Number(score || 0),
+      0
+    );
+
+const calculatedOpponentScore =
+  opponentInnings
+    .slice(0, visibleInningCount)
+    .reduce(
+      (total, score) =>
+        total + Number(score || 0),
+      0
+    );
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -41,10 +70,16 @@ const [day, setDay] = useState(25);
       return;
     }
 
-    if (bubblesScore === "" || opponentScore === "") {
-      setError("両チームの得点を入力してください。");
-      return;
-    }
+    if (
+  currentSeason === 1 &&
+  (bubblesScore === "" ||
+    opponentScore === "")
+) {
+  setError(
+    "両チームの得点を入力してください。"
+  );
+  return;
+}
 
     const newGame = {
   id: crypto.randomUUID(),
@@ -55,8 +90,28 @@ const [day, setDay] = useState(25);
   gameType,
   homeAway,
 
-  bubblesScore: Number(bubblesScore),
-  opponentScore: Number(opponentScore),
+  bubblesScore:
+  currentSeason === 1
+    ? Number(bubblesScore)
+    : calculatedBubblesScore,
+
+opponentScore:
+  currentSeason === 1
+    ? Number(opponentScore)
+    : calculatedOpponentScore,
+    inningScores:
+  currentSeason === 1
+    ? null
+    : {
+        bubbles: bubblesInnings.slice(
+          0,
+          visibleInningCount
+        ),
+        opponent: opponentInnings.slice(
+          0,
+          visibleInningCount
+        ),
+      },
 
   lineup: [],
   pitcherAppearances: [],
@@ -248,59 +303,165 @@ const [day, setDay] = useState(25);
             </label>
           </div>
         </div>
+        {currentSeason >= 2 && (
+  <div style={formGroupStyle}>
+    <h3>イニング別スコア</h3>
 
-        <div style={scoreAreaStyle}>
-          <div style={scoreTeamStyle}>
-            <label
-              htmlFor="bubblesScore"
-              style={labelStyle}
-            >
-              バブルス
-            </label>
+    <div style={inningTableStyle}>
+      <div style={inningRowStyle}>
+        <strong>回</strong>
 
+        {Array.from(
+          {
+            length: showExtraInnings ? 12 : 9,
+          },
+          (_, index) => (
+            <strong key={index}>
+              {index + 1}
+            </strong>
+          )
+        )}
+      </div>
+
+      <div style={inningRowStyle}>
+        <strong>バブルス</strong>
+
+        {bubblesInnings
+          .slice(
+            0,
+            showExtraInnings ? 12 : 9
+          )
+          .map((score, index) => (
             <input
-              id="bubblesScore"
+              key={index}
               type="number"
               min="0"
-              value={bubblesScore}
+              value={score}
               onChange={(event) => {
-                setBubblesScore(event.target.value);
-                setError("");
+                const next = [
+                  ...bubblesInnings,
+                ];
+
+                next[index] =
+                  event.target.value;
+
+                setBubblesInnings(next);
               }}
-              style={scoreInputStyle}
+              style={inningInputStyle}
             />
-          </div>
+          ))}
+      </div>
 
-          <div style={scoreSeparatorStyle}>
-            －
-          </div>
+      <div style={inningRowStyle}>
+        <strong>
+          {opponent || "対戦相手"}
+        </strong>
 
-          <div style={scoreTeamStyle}>
-            <label
-              htmlFor="opponentScore"
-              style={labelStyle}
-            >
-              {opponent || "対戦相手"}
-            </label>
-
+        {opponentInnings
+          .slice(
+            0,
+            showExtraInnings ? 12 : 9
+          )
+          .map((score, index) => (
             <input
-              id="opponentScore"
+              key={index}
               type="number"
               min="0"
-              value={opponentScore}
+              value={score}
               onChange={(event) => {
-                setOpponentScore(event.target.value);
-                setError("");
+                const next = [
+                  ...opponentInnings,
+                ];
+
+                next[index] =
+                  event.target.value;
+
+                setOpponentInnings(next);
               }}
-              style={scoreInputStyle}
+              style={inningInputStyle}
             />
-          </div>
-        </div>
+          ))}
+      </div>
+
+      <button
+        type="button"
+        onClick={() =>
+          setShowExtraInnings(
+            !showExtraInnings
+          )
+        }
+        style={extraInningButtonStyle}
+      >
+        {showExtraInnings
+          ? "延長入力を閉じる"
+          : "延長10〜12回を入力"}
+      </button>
+    </div>
+  </div>
+)}
+
+        {currentSeason === 1 && (
+  <div style={scoreAreaStyle}>
+    <div style={scoreTeamStyle}>
+      <label
+        htmlFor="bubblesScore"
+        style={labelStyle}
+      >
+        バブルス
+      </label>
+
+      <input
+        id="bubblesScore"
+        type="number"
+        min="0"
+        value={bubblesScore}
+        onChange={(event) => {
+          setBubblesScore(event.target.value);
+          setError("");
+        }}
+        style={scoreInputStyle}
+      />
+    </div>
+
+    <div style={scoreSeparatorStyle}>
+      －
+    </div>
+
+    <div style={scoreTeamStyle}>
+      <label
+        htmlFor="opponentScore"
+        style={labelStyle}
+      >
+        {opponent || "対戦相手"}
+      </label>
+
+      <input
+        id="opponentScore"
+        type="number"
+        min="0"
+        value={opponentScore}
+        onChange={(event) => {
+          setOpponentScore(event.target.value);
+          setError("");
+        }}
+        style={scoreInputStyle}
+      />
+    </div>
+  </div>
+)}
 
         <ResultPreview
-          bubblesScore={bubblesScore}
-          opponentScore={opponentScore}
-        />
+  bubblesScore={
+    currentSeason === 1
+      ? bubblesScore
+      : calculatedBubblesScore
+  }
+  opponentScore={
+    currentSeason === 1
+      ? opponentScore
+      : calculatedOpponentScore
+  }
+/>
 
         <button type="submit" style={saveButtonStyle}>
           試合を保存
@@ -445,7 +606,38 @@ const radioLabelStyle = {
   gap: 7,
   cursor: "pointer",
 };
+const inningTableStyle = {
+  overflowX: "auto",
+};
 
+const inningRowStyle = {
+  display: "grid",
+  gridTemplateColumns:
+    "90px repeat(12, 60px)",
+  gap: 8,
+  alignItems: "center",
+  marginBottom: 8,
+};
+
+const inningInputStyle = {
+  width: 60,
+  boxSizing: "border-box",
+  padding: 8,
+  border: "1px solid #aaaaaa",
+  borderRadius: 6,
+  textAlign: "center",
+  fontSize: 16,
+};
+
+const extraInningButtonStyle = {
+  marginTop: 10,
+  padding: "10px 14px",
+  border: "1px solid #222222",
+  borderRadius: 6,
+  backgroundColor: "#ffffff",
+  cursor: "pointer",
+  fontWeight: "bold",
+};
 const scoreAreaStyle = {
   display: "flex",
   alignItems: "flex-end",

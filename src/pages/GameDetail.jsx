@@ -119,7 +119,11 @@ const pitchingStats = Array.isArray(
             {game.opponent}
           </div>
         </div>
-
+{game.inningScores && (
+  <InningScoreTable
+    game={game}
+  />
+)}
         <GameRecordSummary records={records} />
 
         <Link
@@ -153,6 +157,96 @@ const pitchingStats = Array.isArray(
   );
 }
 
+function InningScoreTable({ game }) {
+  const bubbles = Array.isArray(
+    game.inningScores?.bubbles
+  )
+    ? game.inningScores.bubbles
+    : [];
+
+  const opponent = Array.isArray(
+    game.inningScores?.opponent
+  )
+    ? game.inningScores.opponent
+    : [];
+
+  const inningCount = Math.max(
+    bubbles.length,
+    opponent.length
+  );
+
+  const innings = Array.from(
+    { length: inningCount },
+    (_, index) => index + 1
+  );
+
+  return (
+    <div style={inningScoreWrapperStyle}>
+      <table style={inningScoreTableStyle}>
+        <thead>
+          <tr>
+            <th style={inningScoreHeaderStyle}>
+              チーム
+            </th>
+
+            {innings.map((inning) => (
+              <th
+                key={inning}
+                style={inningScoreHeaderStyle}
+              >
+                {inning}
+              </th>
+            ))}
+
+            <th style={inningScoreHeaderStyle}>
+              計
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td style={inningScoreTeamStyle}>
+              バブルス
+            </td>
+
+            {innings.map((inning) => (
+              <td
+                key={inning}
+                style={inningScoreCellStyle}
+              >
+                {bubbles[inning - 1] ?? ""}
+              </td>
+            ))}
+
+            <td style={inningScoreTotalStyle}>
+              {game.bubblesScore}
+            </td>
+          </tr>
+
+          <tr>
+            <td style={inningScoreTeamStyle}>
+              {game.opponent}
+            </td>
+
+            {innings.map((inning) => (
+              <td
+                key={inning}
+                style={inningScoreCellStyle}
+              >
+                {opponent[inning - 1] ?? ""}
+              </td>
+            ))}
+
+            <td style={inningScoreTotalStyle}>
+              {game.opponentScore}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
 function GameRecordSummary({ records }) {
   if (!hasRecords(records)) {
     return (
@@ -844,7 +938,43 @@ const dateStyle = {
   color: "#555555",
   fontWeight: "bold",
 };
+const inningScoreWrapperStyle = {
+  marginTop: 24,
+  overflowX: "auto",
+};
 
+const inningScoreTableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
+  minWidth: 700,
+};
+
+const inningScoreHeaderStyle = {
+  padding: 10,
+  border: "1px solid #bbbbbb",
+  backgroundColor: "#f3f3f3",
+  textAlign: "center",
+};
+
+const inningScoreCellStyle = {
+  padding: 10,
+  border: "1px solid #bbbbbb",
+  textAlign: "center",
+};
+
+const inningScoreTeamStyle = {
+  padding: 10,
+  border: "1px solid #bbbbbb",
+  fontWeight: "bold",
+  whiteSpace: "nowrap",
+};
+
+const inningScoreTotalStyle = {
+  padding: 10,
+  border: "1px solid #bbbbbb",
+  textAlign: "center",
+  fontWeight: "bold",
+};
 const scoreBoardStyle = {
   display: "flex",
   alignItems: "center",
