@@ -11,7 +11,6 @@ import {
 import {
   calculatePlayerStats,
   formatBattingAverage,
-  formatOps,
   formatThreeDecimalStat,
 } from "../utils/playerStats";
 
@@ -45,7 +44,11 @@ export default function PostseasonStats() {
           Number(game?.opponentScore)
         )
     );
+const requiredPlateAppearances =
+  Math.ceil(completedGames.length * 3.1);
 
+const requiredInningsOuts =
+  completedGames.length * 3;
   const playerStats =
     calculatePlayerStats(
       completedGames,
@@ -79,13 +82,21 @@ const battingAverageRanking = [
 ]
   .filter(
     (player) =>
-      Number(player.atBats ?? 0) > 0
+      Number(player.plateAppearances ?? 0) >=
+      requiredPlateAppearances
   )
   .sort(
     (a, b) =>
       Number(b.battingAverage ?? 0) -
       Number(a.battingAverage ?? 0)
   );
+  const hitsRanking = [
+  ...fielderStats,
+].sort(
+  (a, b) =>
+    Number(b.hits ?? 0) -
+    Number(a.hits ?? 0)
+);
 
 const homeRunsRanking = [
   ...fielderStats,
@@ -109,13 +120,29 @@ const winsRanking = [
     Number(b.wins ?? 0) -
     Number(a.wins ?? 0)
 );
+const holdsRanking = [
+  ...pitcherStats,
+].sort(
+  (a, b) =>
+    Number(b.holds ?? 0) -
+    Number(a.holds ?? 0)
+);
+
+const savesRanking = [
+  ...pitcherStats,
+].sort(
+  (a, b) =>
+    Number(b.saves ?? 0) -
+    Number(a.saves ?? 0)
+);
 
 const eraRanking = [
   ...pitcherStats,
 ]
   .filter(
     (player) =>
-      Number(player.inningsOuts ?? 0) > 0
+      Number(player.inningsOuts ?? 0) >=
+      requiredInningsOuts
   )
   .sort(
     (a, b) =>
@@ -151,6 +178,13 @@ const strikeoutsRanking = [
         PS試合数：
         {completedGames.length}試合
       </p>
+      <p>
+  規定打席：
+  {requiredPlateAppearances}打席
+  ／
+  規定投球回：
+  {completedGames.length}回
+</p>
 
       <section style={sectionStyle}>
   <h2>野手成績</h2>
@@ -164,7 +198,13 @@ const strikeoutsRanking = [
       )
     }
   />
-
+<RankingList
+  title="安打"
+  ranking={hitsRanking}
+  value={(player) =>
+    `${player.hits}安打`
+  }
+/>
   <RankingList
     title="本塁打"
     ranking={homeRunsRanking}
@@ -192,6 +232,21 @@ const strikeoutsRanking = [
       `${player.wins}勝`
     }
   />
+  <RankingList
+  title="ホールド"
+  ranking={holdsRanking}
+  value={(player) =>
+    `${player.holds}H`
+  }
+/>
+
+<RankingList
+  title="セーブ"
+  ranking={savesRanking}
+  value={(player) =>
+    `${player.saves}S`
+  }
+/>
 
   <RankingList
     title="防御率"
