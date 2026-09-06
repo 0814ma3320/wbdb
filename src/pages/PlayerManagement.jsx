@@ -26,12 +26,23 @@ export default function PlayerManagement() {
     useState("捕手");
     const [teamName, setTeamName] =
   useState("和桐バブルス");
+  const [teamFilter, setTeamFilter] =
+  useState("全選手");
 const [editingPlayerId, setEditingPlayerId] =
   useState(null);
 
 const [editingNumber, setEditingNumber] =
   useState("");
-  const sortedPlayers = [...playerList].sort(
+  const filteredPlayers =
+  teamFilter === "全選手"
+    ? playerList
+    : playerList.filter(
+        (player) =>
+          (player.teamName ??
+            "和桐バブルス") ===
+          teamFilter
+      );
+  const sortedPlayers = [...filteredPlayers].sort(
     (a, b) => {
       if (a.active !== b.active) {
         return a.active ? -1 : 1;
@@ -449,6 +460,36 @@ function saveNumber(playerId) {
       >
         ＋ 新規選手追加
       </button>
+      <div style={{ marginBottom: 20 }}>
+  <select
+    value={teamFilter}
+    onChange={(event) =>
+      setTeamFilter(event.target.value)
+    }
+  >
+    <option value="全選手">
+      全選手
+    </option>
+    <option value="和桐バブルス">
+      和桐バブルス
+    </option>
+    <option value="ライオンズ">
+      ライオンズ
+    </option>
+    <option value="ジャイアンツ">
+      ジャイアンツ
+    </option>
+    <option value="イーグルス">
+      イーグルス
+    </option>
+    <option value="スワローズ">
+      スワローズ
+    </option>
+    <option value="タイガース">
+      タイガース
+    </option>
+  </select>
+</div>
 
     {showAddForm && (
   <div style={formStyle}>
@@ -566,9 +607,9 @@ function saveNumber(playerId) {
 )}
 
       <p>
-        登録選手：
-        <strong>{playerList.length}人</strong>
-      </p>
+  表示選手：
+  <strong>{sortedPlayers.length}人</strong>
+</p>
 
       <table style={tableStyle}>
         <thead>
