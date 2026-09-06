@@ -106,7 +106,17 @@ const recentPitchingLogs =
     player,
     5
   );
+const regularLineupUsage =
+  getPlayerLineupUsage(
+    regularGames,
+    player
+  );
 
+const postseasonLineupUsage =
+  getPlayerLineupUsage(
+    postseasonGames,
+    player
+  );
 const isPitcher =
   player.category === "投手";
 
@@ -158,7 +168,40 @@ const isPitcher =
           </tr>
         </tbody>
       </table>
+{!isPitcher && (
+  <>
+    <h2 style={sectionTitleStyle}>
+      スタメン起用
+    </h2>
 
+    <p>
+      打順：
+      {Object.entries(
+        regularLineupUsage.battingOrders
+      )
+        .sort(
+          ([a], [b]) => Number(a) - Number(b)
+        )
+        .map(
+          ([order, games]) =>
+            `${order}番 ${games}試合`
+        )
+        .join(" ／ ") || "データなし"}
+    </p>
+
+    <p>
+      守備位置：
+      {Object.entries(
+        regularLineupUsage.positions
+      )
+        .map(
+          ([position, games]) =>
+            `${position} ${games}試合`
+        )
+        .join(" ／ ") || "データなし"}
+    </p>
+  </>
+)}
       <h2 style={sectionTitleStyle}>
   Season {currentSeason} 成績
 </h2>
@@ -175,6 +218,40 @@ const isPitcher =
     recentStats={recentBattingStats}
     recentLogs={recentBattingLogs}
   />
+)}
+{!isPitcher && (
+  <>
+    <h2 style={sectionTitleStyle}>
+      Postseason スタメン起用
+    </h2>
+
+    <p>
+      打順：
+      {Object.entries(
+        postseasonLineupUsage.battingOrders
+      )
+        .sort(
+          ([a], [b]) => Number(a) - Number(b)
+        )
+        .map(
+          ([order, games]) =>
+            `${order}番 ${games}試合`
+        )
+        .join(" ／ ") || "データなし"}
+    </p>
+
+    <p>
+      守備位置：
+      {Object.entries(
+        postseasonLineupUsage.positions
+      )
+        .map(
+          ([position, games]) =>
+            `${position} ${games}試合`
+        )
+        .join(" ／ ") || "データなし"}
+    </p>
+  </>
 )}
 <h2 style={sectionTitleStyle}>
   Postseason 成績
@@ -865,6 +942,46 @@ function formatTwoDecimal(value) {
   }
 
   return number.toFixed(2);
+}
+function getPlayerLineupUsage(games, player) {
+  const battingOrders = {};
+  const positions = {};
+
+  games
+    .filter(
+      (game) =>
+        game.lineupStatsEnabled === true &&
+        Array.isArray(game.lineup)
+    )
+    .forEach((game) => {
+      const row = game.lineup.find(
+        (item) =>
+          String(item.playerId) === String(player.id)
+      );
+
+      if (!row) {
+        return;
+      }
+
+      const battingOrder = Number(
+        row.battingOrder
+      );
+
+      if (battingOrder) {
+        battingOrders[battingOrder] =
+          (battingOrders[battingOrder] ?? 0) + 1;
+      }
+
+      if (row.position) {
+        positions[row.position] =
+          (positions[row.position] ?? 0) + 1;
+      }
+    });
+
+  return {
+    battingOrders,
+    positions,
+  };
 }
 function loadGames() {
   try {
