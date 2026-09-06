@@ -55,6 +55,61 @@ function downloadBackup() {
   window.alert(
     "バックアップを保存しました。"
   );
+}function downloadGptBackup() {
+  const safeKeys = [
+    "games",
+    "wakagiri_players",
+    "season1BaseTeam",
+    "season1BaseStats",
+    "currentSeason",
+    "viewingSeason",
+    "seasonAwards",
+  ];
+
+  const backupData = {};
+
+  safeKeys.forEach((key) => {
+    const value =
+      localStorage.getItem(key);
+
+    if (value !== null) {
+      backupData[key] = value;
+    }
+  });
+
+  const backup = {
+    createdAt: new Date().toISOString(),
+    baseballData: backupData,
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(backup, null, 2)],
+    {
+      type: "application/json",
+    }
+  );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+  link.download =
+    `wakagiri-gpt-backup-${new Date()
+      .toISOString()
+      .slice(0, 10)}.json`;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+
+  window.alert(
+    "GPT共有用バックアップを保存しました。"
+  );
 }
 export default function Home() {
   const currentSeason = getCurrentSeason();
@@ -203,6 +258,14 @@ export default function Home() {
 >
   <span style={iconStyle}>💾</span>
   データバックアップ
+</button>
+<button
+  type="button"
+  onClick={downloadGptBackup}
+  style={backupButtonStyle}
+>
+  <span style={iconStyle}>📤</span>
+  GPT共有用バックアップ
 </button>
 <button
   type="button"
