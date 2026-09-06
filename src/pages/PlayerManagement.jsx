@@ -242,6 +242,113 @@ tenures: [
   setPlayerList(updatedPlayers);
   savePlayers(updatedPlayers);
 }
+function transferPlayer(playerId) {
+  const targetPlayer = playerList.find(
+    (player) => player.id === playerId
+  );
+
+  if (!targetPlayer) {
+    return;
+  }
+
+  const teamOptions = [
+    "和桐バブルス",
+    "ライオンズ",
+    "ジャイアンツ",
+    "イーグルス",
+    "スワローズ",
+    "タイガース",
+  ];
+
+  const input = window.prompt(
+    `移籍先を入力してください。\n\n${teamOptions.join(
+      "\n"
+    )}`
+  );
+
+  if (!input) {
+    return;
+  }
+
+  const nextTeam = input.trim();
+
+  if (!teamOptions.includes(nextTeam)) {
+    window.alert(
+      "球団名が正しくありません。"
+    );
+    return;
+  }
+
+  if (nextTeam === targetPlayer.teamName) {
+    window.alert(
+      "現在と同じ球団です。"
+    );
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `${targetPlayer.name}をSeason ${currentSeason}から\n${targetPlayer.teamName} → ${nextTeam}\nへ移籍させますか？`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const updatedPlayers = playerList.map(
+    (player) => {
+      if (player.id !== playerId) {
+        return player;
+      }
+
+      const tenures =
+        Array.isArray(player.tenures) &&
+        player.tenures.length > 0
+          ? [...player.tenures]
+          : [
+              {
+                teamName:
+                  player.teamName ??
+                  "和桐バブルス",
+                joinedSeason:
+                  player.joinedSeason ?? 1,
+                leftSeason: null,
+              },
+            ];
+
+      const closedTenures = tenures.map(
+        (tenure, index) =>
+          index === tenures.length - 1
+            ? {
+                ...tenure,
+                teamName:
+                  tenure.teamName ??
+                  player.teamName ??
+                  "和桐バブルス",
+                leftSeason: currentSeason,
+              }
+            : tenure
+      );
+
+      return {
+        ...player,
+        teamName: nextTeam,
+        active: true,
+        leftSeason: null,
+        tenures: [
+          ...closedTenures,
+          {
+            teamName: nextTeam,
+            joinedSeason: currentSeason,
+            leftSeason: null,
+          },
+        ],
+      };
+    }
+  );
+
+  setPlayerList(updatedPlayers);
+  savePlayers(updatedPlayers);
+}
 function deletePlayer(playerId) {
   const targetPlayer = playerList.find(
     (player) => player.id === playerId
@@ -579,7 +686,15 @@ function saveNumber(playerId) {
       背番号編集
     </button>
   ))}
-
+<button
+  type="button"
+  onClick={() =>
+    transferPlayer(player.id)
+  }
+  style={transferButtonStyle}
+>
+  移籍
+</button>
     <button
       type="button"
       onClick={() =>
@@ -715,6 +830,15 @@ const cancelButtonStyle = {
   backgroundColor: "#fff",
   border: "1px solid #666",
   color: "#333",
+  borderRadius: 4,
+  fontWeight: "bold",
+};
+const transferButtonStyle = {
+  padding: "6px 12px",
+  cursor: "pointer",
+  backgroundColor: "#fff",
+  border: "1px solid #7b1fa2",
+  color: "#7b1fa2",
   borderRadius: 4,
   fontWeight: "bold",
 };
