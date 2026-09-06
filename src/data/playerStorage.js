@@ -9,12 +9,21 @@ function createInitialPlayers() {
     active: player.active ?? true,
     joinedSeason: player.joinedSeason ?? 1,
     leftSeason: player.leftSeason ?? null,
-    tenures:
+   tenures:
   Array.isArray(player.tenures) &&
   player.tenures.length > 0
-    ? player.tenures
+    ? player.tenures.map((tenure) => ({
+        ...tenure,
+        teamName:
+          tenure.teamName ??
+          player.teamName ??
+          "和桐バブルス",
+      }))
     : [
         {
+          teamName:
+            player.teamName ??
+            "和桐バブルス",
           joinedSeason:
             player.joinedSeason ?? 1,
           leftSeason:
@@ -54,17 +63,26 @@ export function getPlayers() {
   joinedSeason: player.joinedSeason ?? 1,
   leftSeason: player.leftSeason ?? null,
   tenures:
-    Array.isArray(player.tenures) &&
-    player.tenures.length > 0
-      ? player.tenures
-      : [
-          {
-            joinedSeason:
-              player.joinedSeason ?? 1,
-            leftSeason:
-              player.leftSeason ?? null,
-          },
-        ],
+  Array.isArray(player.tenures) &&
+  player.tenures.length > 0
+    ? player.tenures.map((tenure) => ({
+        ...tenure,
+        teamName:
+          tenure.teamName ??
+          player.teamName ??
+          "和桐バブルス",
+      }))
+    : [
+        {
+          teamName:
+            player.teamName ??
+            "和桐バブルス",
+          joinedSeason:
+            player.joinedSeason ?? 1,
+          leftSeason:
+            player.leftSeason ?? null,
+        },
+      ],
 }));
   } catch (error) {
     console.error(
@@ -101,13 +119,17 @@ export function getPlayersForSeason(
     return [];
   }
 
-  return getPlayers().filter((player) => {
+  return getPlayers()
+  .map((player) => {
     const tenures =
       Array.isArray(player.tenures) &&
       player.tenures.length > 0
         ? player.tenures
         : [
             {
+              teamName:
+                player.teamName ??
+                "和桐バブルス",
               joinedSeason:
                 player.joinedSeason ?? 1,
               leftSeason:
@@ -115,26 +137,41 @@ export function getPlayersForSeason(
             },
           ];
 
-    return tenures.some((tenure) => {
-      const joinedSeason = Number(
-        tenure.joinedSeason ?? 1
-      );
+    const matchedTenure = tenures.find(
+      (tenure) => {
+        const joinedSeason = Number(
+          tenure.joinedSeason ?? 1
+        );
 
-      const leftSeason =
-        tenure.leftSeason === null ||
-        tenure.leftSeason === undefined ||
-        tenure.leftSeason === ""
-          ? null
-          : Number(tenure.leftSeason);
+        const leftSeason =
+          tenure.leftSeason === null ||
+          tenure.leftSeason === undefined ||
+          tenure.leftSeason === ""
+            ? null
+            : Number(tenure.leftSeason);
 
-      const joined =
-        season >= joinedSeason;
+        const joined =
+          season >= joinedSeason;
 
-      const notLeftYet =
-        leftSeason === null ||
-        season < leftSeason;
+        const notLeftYet =
+          leftSeason === null ||
+          season < leftSeason;
 
-      return joined && notLeftYet;
-    });
-  });
+        return joined && notLeftYet;
+      }
+    );
+
+    if (!matchedTenure) {
+      return null;
+    }
+
+    return {
+      ...player,
+      teamName:
+        matchedTenure.teamName ??
+        player.teamName ??
+        "和桐バブルス",
+    };
+  })
+  .filter(Boolean);
 }
