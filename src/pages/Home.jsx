@@ -160,6 +160,13 @@ export default function Home() {
           シーズン成績
         </Link>
         <Link
+  to="/postseason"
+  style={buttonStyle}
+>
+  <span style={iconStyle}>🏟️</span>
+  Postseason 成績
+</Link>
+        <Link
   to="/season-management"
   style={buttonStyle}
 >
