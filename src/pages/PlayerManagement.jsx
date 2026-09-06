@@ -190,18 +190,35 @@ tenures: [
             ];
 
       if (nextStatus) {
-        tenures.push({
-          joinedSeason: currentSeason,
-          leftSeason: null,
-        });
+  const lastTenure =
+    tenures[tenures.length - 1];
 
-        return {
-          ...player,
-          active: true,
-          leftSeason: null,
-          tenures,
-        };
-      }
+  const updatedTenures =
+    Number(lastTenure?.leftSeason) ===
+    currentSeason
+      ? tenures.map((tenure, index) =>
+          index === tenures.length - 1
+            ? {
+                ...tenure,
+                leftSeason: null,
+              }
+            : tenure
+        )
+      : [
+          ...tenures,
+          {
+            joinedSeason: currentSeason,
+            leftSeason: null,
+          },
+        ];
+
+  return {
+    ...player,
+    active: true,
+    leftSeason: null,
+    tenures: updatedTenures,
+  };
+}
 
       const updatedTenures =
         tenures.map((tenure, index) =>

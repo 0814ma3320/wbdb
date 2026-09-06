@@ -132,7 +132,7 @@ export function getPlayersForSeason(
 
       const notLeftYet =
         leftSeason === null ||
-        season <= leftSeason;
+        season < leftSeason;
 
       return joined && notLeftYet;
     });
