@@ -26,6 +26,7 @@ const [day, setDay] = useState(25);
   const [bubblesScore, setBubblesScore] = useState("");
   const [opponentScore, setOpponentScore] = useState("");
   const [error, setError] = useState("");
+  const [gameType, setGameType] = useState("regular");
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -51,6 +52,7 @@ const [day, setDay] = useState(25);
 
   date: `2011-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
   opponent,
+  gameType,
   homeAway,
 
   bubblesScore: Number(bubblesScore),
@@ -160,7 +162,33 @@ const [day, setDay] = useState(25);
 </div>
           
         </div>
+<div style={formGroupStyle}>
+  <label htmlFor="gameType" style={labelStyle}>
+    試合区分
+  </label>
 
+  <select
+    id="gameType"
+    value={gameType}
+    onChange={(event) => {
+      setGameType(event.target.value);
+      setError("");
+    }}
+    style={inputStyle}
+  >
+    <option value="regular">
+      レギュラーシーズン
+    </option>
+
+    <option value="ps1st">
+      PS 1st
+    </option>
+
+    <option value="psFinal">
+      PS FINAL
+    </option>
+  </select>
+</div>
         <div style={formGroupStyle}>
           <label htmlFor="opponent" style={labelStyle}>
             対戦相手

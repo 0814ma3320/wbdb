@@ -168,3 +168,42 @@ export function getGamesForSeason(
       Number(seasonNumber)
   );
 }
+export function getGameType(game) {
+  const gameType = game?.gameType;
+
+  if (
+    gameType === "regular" ||
+    gameType === "ps1st" ||
+    gameType === "psFinal"
+  ) {
+    return gameType;
+  }
+
+  return "regular";
+}
+
+export function getRegularSeasonGames(games) {
+  if (!Array.isArray(games)) {
+    return [];
+  }
+
+  return games.filter(
+    (game) =>
+      getGameType(game) === "regular"
+  );
+}
+
+export function getPostseasonGames(games) {
+  if (!Array.isArray(games)) {
+    return [];
+  }
+
+  return games.filter((game) => {
+    const gameType = getGameType(game);
+
+    return (
+      gameType === "ps1st" ||
+      gameType === "psFinal"
+    );
+  });
+}

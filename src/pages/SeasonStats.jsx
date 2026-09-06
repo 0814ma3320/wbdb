@@ -4,6 +4,7 @@ import {
   getViewingSeason,
   getGamesForSeason,
   getSeasonLabel,
+  getRegularSeasonGames,
 } from "../data/seasonStorage";
 import {
   calculatePlayerStats,
@@ -30,8 +31,10 @@ const games = getGamesForSeason(
   allGames,
   currentSeason
 );
+const regularGames =
+  getRegularSeasonGames(games);
 
-const completedGames = games.filter(
+const completedGames = regularGames.filter(
   (game) =>
     Number.isFinite(Number(game?.bubblesScore)) &&
     Number.isFinite(Number(game?.opponentScore))
@@ -54,7 +57,7 @@ const requiredInnings =
   totalCompletedGames;
 
   const playerStats = calculatePlayerStats(
-  games,
+  regularGames,
   players,
   currentSeason
 );

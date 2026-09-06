@@ -12,6 +12,7 @@ import {
   getViewingSeason,
   getGamesForSeason,
   getSeasonLabel,
+  getRegularSeasonGames,
 } from "../data/seasonStorage";
 import {
   getSeason1BaseTeam,
@@ -31,8 +32,10 @@ const players = getPlayersForSeason(
     allGames,
     currentSeason
   );
+  const regularGames =
+  getRegularSeasonGames(games);
 
-  const completedGames = games.filter(
+  const completedGames = regularGames.filter(
     (game) =>
       Number.isFinite(
         Number(game?.bubblesScore)

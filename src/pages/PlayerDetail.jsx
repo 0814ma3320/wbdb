@@ -7,6 +7,7 @@ import { getPlayersForSeason } from "../data/playerStorage";
 import {
   getViewingSeason,
   getGamesForSeason,
+  getRegularSeasonGames,
 } from "../data/seasonStorage";
 import {
   formatBattingAverage,
@@ -63,37 +64,39 @@ const games = getGamesForSeason(
   allGames,
   currentSeason
 );
+const regularGames =
+  getRegularSeasonGames(games);
 
 const stats = getPlayerStats(
-  games,
+  regularGames,
   player,
   currentSeason
 );
 
 const recentBattingStats =
   getRecentBattingStats(
-    games,
+    regularGames,
     player,
     5
   );
 
 const recentPitchingStats =
   getRecentPitchingStats(
-    games,
+    regularGames,
     player,
     5
   );
 
 const recentBattingLogs =
   getRecentBattingGameLogs(
-    games,
+    regularGames,
     player,
     5
   );
 
 const recentPitchingLogs =
   getRecentPitchingGameLogs(
-    games,
+    regularGames,
     player,
     5
   );
