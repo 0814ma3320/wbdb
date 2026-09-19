@@ -324,34 +324,95 @@ opponentScore:
         )}
       </div>
 
-      <div style={inningRowStyle}>
-        <strong>バブルス</strong>
+      {homeAway === "home" ? (
+  <>
+    <div style={inningRowStyle}>
+      <strong>{opponent || "対戦相手"}</strong>
 
-        {bubblesInnings
-          .slice(
-            0,
-            showExtraInnings ? 12 : 9
-          )
-          .map((score, index) => (
-            <input
-              key={index}
-              type="number"
-              min="0"
-              value={score}
-              onChange={(event) => {
-                const next = [
-                  ...bubblesInnings,
-                ];
+      {opponentInnings
+        .slice(0, showExtraInnings ? 12 : 9)
+        .map((score, index) => (
+          <input
+            key={index}
+            type="number"
+            min="0"
+            value={score}
+            onChange={(event) => {
+              const next = [...opponentInnings];
+              next[index] = event.target.value;
+              setOpponentInnings(next);
+            }}
+            style={inningInputStyle}
+          />
+        ))}
+    </div>
 
-                next[index] =
-                  event.target.value;
+    <div style={inningRowStyle}>
+      <strong>バブルス</strong>
 
-                setBubblesInnings(next);
-              }}
-              style={inningInputStyle}
-            />
-          ))}
-      </div>
+      {bubblesInnings
+        .slice(0, showExtraInnings ? 12 : 9)
+        .map((score, index) => (
+          <input
+            key={index}
+            type="number"
+            min="0"
+            value={score}
+            onChange={(event) => {
+              const next = [...bubblesInnings];
+              next[index] = event.target.value;
+              setBubblesInnings(next);
+            }}
+            style={inningInputStyle}
+          />
+        ))}
+    </div>
+  </>
+) : (
+  <>
+    <div style={inningRowStyle}>
+      <strong>バブルス</strong>
+
+      {bubblesInnings
+        .slice(0, showExtraInnings ? 12 : 9)
+        .map((score, index) => (
+          <input
+            key={index}
+            type="number"
+            min="0"
+            value={score}
+            onChange={(event) => {
+              const next = [...bubblesInnings];
+              next[index] = event.target.value;
+              setBubblesInnings(next);
+            }}
+            style={inningInputStyle}
+          />
+        ))}
+    </div>
+
+    <div style={inningRowStyle}>
+      <strong>{opponent || "対戦相手"}</strong>
+
+      {opponentInnings
+        .slice(0, showExtraInnings ? 12 : 9)
+        .map((score, index) => (
+          <input
+            key={index}
+            type="number"
+            min="0"
+            value={score}
+            onChange={(event) => {
+              const next = [...opponentInnings];
+              next[index] = event.target.value;
+              setOpponentInnings(next);
+            }}
+            style={inningInputStyle}
+          />
+        ))}
+    </div>
+  </>
+)}
 
       <div style={inningRowStyle}>
         <strong>
