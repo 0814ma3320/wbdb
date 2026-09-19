@@ -391,26 +391,7 @@ opponentScore:
         ))}
     </div>
 
-    <div style={inningRowStyle}>
-      <strong>{opponent || "対戦相手"}</strong>
-
-      {opponentInnings
-        .slice(0, showExtraInnings ? 12 : 9)
-        .map((score, index) => (
-          <input
-            key={index}
-            type="number"
-            min="0"
-            value={score}
-            onChange={(event) => {
-              const next = [...opponentInnings];
-              next[index] = event.target.value;
-              setOpponentInnings(next);
-            }}
-            style={inningInputStyle}
-          />
-        ))}
-    </div>
+    
   </>
 )}
 
