@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { getPlayersForSeason } from "../data/playerStorage";
 import { getGameSeason } from "../data/seasonStorage";
-import { leaguePlayers } from "../data/leaguePlayers";
 import { formatSeasonDate } from "../utils/seasonCalendar";
 
 import {
@@ -42,14 +41,17 @@ const bubblesPitchers = players
     label: `${player.number} ${player.name}`,
   }));
 
-const opponentPitchers =
-  leaguePlayers[game?.opponent]?.pitchers?.map(
-    (name, index) => ({
-      id: `opponent-p-${index}`,
-      name,
-      label: name,
-    })
-  ) ?? [];
+const opponentPitchers = players
+  .filter(
+    (player) =>
+      player.teamName === game?.opponent &&
+      player.category === "投手"
+  )
+  .map((player) => ({
+    id: player.id,
+    name: player.name,
+    label: player.name,
+  }));
 
 const bubblesFielders = players
   .filter(
@@ -63,14 +65,17 @@ const bubblesFielders = players
     label: `${player.number} ${player.name}`,
   }));
 
-const opponentFielders =
-  leaguePlayers[game?.opponent]?.fielders?.map(
-    (name, index) => ({
-      id: `opponent-f-${index}`,
-      name,
-      label: name,
-    })
-  ) ?? [];
+const opponentFielders = players
+  .filter(
+    (player) =>
+      player.teamName === game?.opponent &&
+      player.category === "野手"
+  )
+  .map((player) => ({
+    id: player.id,
+    name: player.name,
+    label: player.name,
+  }));
 
 const bubblesPlayers = players
   .filter(
