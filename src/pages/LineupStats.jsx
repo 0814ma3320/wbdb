@@ -95,6 +95,7 @@ const postseasonPositionStats =
   ["中", "中堅手"],
   ["右", "右翼手"],
   ["指", "指名打者"],
+  ["投", "投手"],
 ].map(([position, label]) => {
   const ranking = Object.values(
     positionStats[position] ?? {}

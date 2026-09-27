@@ -90,27 +90,21 @@ const players = getPlayersForSeason(
   currentSeason
 );
 
-  const fielderStats = players
-    .filter(
-      (player) => player.category === "野手"
-    )
-    .map((player) => ({
-      ...player,
-      ...playerStats[String(player.id)],
-    }));
+  const allPlayerStats = players.map((player) => ({
+  ...player,
+  ...playerStats[String(player.id)],
+}));
 
-  const pitcherStats = players
-    .filter(
-      (player) => player.category === "投手"
-    )
-    .map((player) => ({
-      ...player,
-      ...playerStats[String(player.id)],
-    }));
+const fielderStats = allPlayerStats.filter(
+  (player) => player.category === "野手"
+);
 
-  const battingStats =
-    calculateTeamBattingStats(fielderStats);
+const pitcherStats = allPlayerStats.filter(
+  (player) => player.category === "投手"
+);
 
+const battingStats =
+  calculateTeamBattingStats(allPlayerStats);
   const pitchingStats =
     calculateTeamPitchingStats(pitcherStats);
 

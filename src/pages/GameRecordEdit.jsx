@@ -21,6 +21,9 @@ const game = games.find(
 
 const gameSeason = getGameSeason(game);
 
+const isInterleague =
+  game?.gameType === "interleague";
+
 const players = getPlayersForSeason(
   gameSeason
 );
@@ -87,6 +90,12 @@ const bubblesPlayers = players
     name: player.name,
     label: `${player.number} ${player.name}`,
   }));
+  const battingPlayers =
+  isInterleague &&
+  game?.homeAway === "visitor"
+    ? bubblesPlayers
+    : bubblesFielders;
+    const homeRunPlayers = battingPlayers;
 
 const relayPitchers = Array.isArray(
   game?.pitcherAppearances
@@ -109,7 +118,7 @@ const [records, setRecords] = useState(() =>
     relayPitchers.length > 0
       ? relayPitchers
       : bubblesPitchers,
-    bubblesFielders
+    battingPlayers
   )
 );
 
@@ -267,7 +276,7 @@ function addHold() {
 
   function handleSave() {
     const validationError =
-      validateRecords(records);
+  validateRecords(records, isInterleague);
 
     if (validationError) {
       setError(validationError);
@@ -521,6 +530,7 @@ battingStats: records.battingStats
         </h2>
 
   <DecisionRow
+    isInterleague={isInterleague}
   label="勝"
   decision={records.win}
   countLabel="勝目"
@@ -536,6 +546,7 @@ battingStats: records.battingStats
 />
 
 <DecisionRow
+  isInterleague={isInterleague}
   label="負"
   decision={records.loss}
   countLabel="敗目"
@@ -587,8 +598,9 @@ battingStats: records.battingStats
 ) : (
   records.holds.map((hold, index) => (
     <HoldRow
-      key={index}
-      hold={hold}
+  key={index}
+  isInterleague={isInterleague}
+  hold={hold}
       index={index}
       opponentName={game.opponent}
       bubblesPitchers={bubblesPitchers}
@@ -631,11 +643,12 @@ battingStats: records.battingStats
 ) : (
   records.homeRuns.map((homeRun, index) => (
     <HomeRunRow
-      key={index}
-      homeRun={homeRun}
+  key={index}
+  isInterleague={isInterleague}
+  homeRun={homeRun}
       index={index}
       opponentName={game.opponent}
-      bubblesFielders={bubblesFielders}
+      bubblesFielders={homeRunPlayers}
       opponentFielders={opponentFielders}
       onChange={(field, value) =>
         updateHomeRun(index, field, value)
@@ -697,6 +710,7 @@ battingStats: records.battingStats
 }
 
 function DecisionRow({
+  isInterleague,
   label,
   decision,
   countLabel,
@@ -774,39 +788,51 @@ function DecisionRow({
         </div>
 
         <div style={decisionInputAreaStyle}>
-          <select
-            value={
-              selectedSide === "bubbles"
-                ? decision.playerId ?? ""
-                : decision.name ?? ""
-            }
-            onChange={(event) =>
-              handlePlayerChange(event.target.value)
-            }
-            style={nameInputStyle}
-          >
-            <option value="">
-              投手を選択
-            </option>
-
-            {selectedSide === "bubbles"
-              ? bubblesPitchers.map((pitcher) => (
-                  <option
-                    key={pitcher.id}
-                    value={pitcher.id}
-                  >
-                    {pitcher.label}
-                  </option>
-                ))
-              : opponentPitchers.map((pitcher) => (
-  <option
-    key={pitcher.id}
-    value={pitcher.name}
+        {selectedSide === "opponent" && isInterleague ? (
+  <input
+    type="text"
+    value={decision.name ?? ""}
+    placeholder="相手投手名（未入力でも可）"
+    onChange={(event) =>
+      handlePlayerChange(event.target.value)
+    }
+    style={nameInputStyle}
+  />
+) : (
+  <select
+    value={
+      selectedSide === "bubbles"
+        ? decision.playerId ?? ""
+        : decision.name ?? ""
+    }
+    onChange={(event) =>
+      handlePlayerChange(event.target.value)
+    }
+    style={nameInputStyle}
   >
-    {pitcher.label}
-  </option>
-))}
-          </select>
+    <option value="">
+      投手を選択
+    </option>
+
+    {selectedSide === "bubbles"
+      ? bubblesPitchers.map((pitcher) => (
+          <option
+            key={pitcher.id}
+            value={pitcher.id}
+          >
+            {pitcher.label}
+          </option>
+        ))
+      : opponentPitchers.map((pitcher) => (
+          <option
+            key={pitcher.id}
+            value={pitcher.name}
+          >
+            {pitcher.label}
+          </option>
+        ))}
+  </select>
+)}
 
           <div style={countAreaStyle}>
             <input
@@ -832,6 +858,7 @@ function DecisionRow({
 }
 
 function HoldRow({
+  isInterleague,
   hold,
   index,
   opponentName,
@@ -908,41 +935,55 @@ function HoldRow({
         </div>
 
         <div style={decisionInputAreaStyle}>
-          <select
-            value={
-              selectedSide === "bubbles"
-                ? hold.playerId ?? ""
-                : hold.name ?? ""
-            }
-            onChange={(event) =>
-              handlePlayerChange(
-                event.target.value
-              )
-            }
-            style={nameInputStyle}
-          >
-            <option value="">
-              投手を選択
-            </option>
-
-            {selectedSide === "bubbles"
-              ? bubblesPitchers.map((pitcher) => (
-                  <option
-                    key={pitcher.id}
-                    value={pitcher.id}
-                  >
-                    {pitcher.label}
-                  </option>
-                ))
-              : opponentPitchers.map((pitcher) => (
-  <option
-    key={pitcher.id}
-    value={pitcher.name}
+          {selectedSide === "opponent" && isInterleague ? (
+  <input
+    type="text"
+    value={hold.name ?? ""}
+    placeholder="相手投手名（未入力でも可）"
+    onChange={(event) =>
+      handlePlayerChange(
+        event.target.value
+      )
+    }
+    style={nameInputStyle}
+  />
+) : (
+  <select
+    value={
+      selectedSide === "bubbles"
+        ? hold.playerId ?? ""
+        : hold.name ?? ""
+    }
+    onChange={(event) =>
+      handlePlayerChange(
+        event.target.value
+      )
+    }
+    style={nameInputStyle}
   >
-    {pitcher.label}
-  </option>
-))}
-          </select>
+    <option value="">
+      投手を選択
+    </option>
+
+    {selectedSide === "bubbles"
+      ? bubblesPitchers.map((pitcher) => (
+          <option
+            key={pitcher.id}
+            value={pitcher.id}
+          >
+            {pitcher.label}
+          </option>
+        ))
+      : opponentPitchers.map((pitcher) => (
+          <option
+            key={pitcher.id}
+            value={pitcher.name}
+          >
+            {pitcher.label}
+          </option>
+        ))}
+  </select>
+)}
 
           <div style={countAreaStyle}>
             <input
@@ -975,6 +1016,7 @@ function HoldRow({
   );
 }
 function HomeRunRow({
+  isInterleague,
   homeRun,
   index,
   opponentName,
@@ -1051,41 +1093,56 @@ function HomeRunRow({
         </div>
 
         <div style={decisionInputAreaStyle}>
-          <select
-            value={
-              selectedSide === "bubbles"
-                ? homeRun.playerId ?? ""
-                : homeRun.name ?? ""
-            }
-            onChange={(event) =>
-              handlePlayerChange(
-                event.target.value
-              )
-            }
-            style={nameInputStyle}
-          >
-            <option value="">
-              野手を選択
-            </option>
-
-            {selectedSide === "bubbles"
-              ? bubblesFielders.map((fielder) => (
-                  <option
-                    key={fielder.id}
-                    value={fielder.id}
-                  >
-                    {fielder.label}
-                  </option>
-                ))
-              : opponentFielders.map((fielder) => (
-  <option
-    key={fielder.id}
-    value={fielder.name}
+          {selectedSide === "opponent" && isInterleague ? (
+  <input
+    type="text"
+    value={homeRun.name ?? ""}
+    placeholder="相手選手名（未入力でも可）"
+    onChange={(event) =>
+      handlePlayerChange(
+        event.target.value
+      )
+    }
+    style={nameInputStyle}
+  />
+) : (
+  <select
+    value={
+      selectedSide === "bubbles"
+        ? homeRun.playerId ?? ""
+        : homeRun.name ?? ""
+    }
+    onChange={(event) =>
+      handlePlayerChange(
+        event.target.value
+      )
+    }
+    style={nameInputStyle}
   >
-    {fielder.label}
-  </option>
-))}
-          </select>
+    <option value="">
+      野手を選択
+    </option>
+
+    {selectedSide === "bubbles"
+      ? bubblesFielders.map((fielder) => (
+          <option
+            key={fielder.id}
+            value={fielder.id}
+          >
+            {fielder.label}
+          </option>
+        ))
+      : opponentFielders.map((fielder) => (
+          <option
+            key={fielder.id}
+            value={fielder.name}
+          >
+            {fielder.label}
+          </option>
+        ))}
+  </select>
+)}
+          
 
           <div style={countAreaStyle}>
             <input
@@ -1523,7 +1580,10 @@ function normalizeDecision(
   };
 }
 
-function validateRecords(records) {
+function validateRecords(
+  records,
+  isInterleague
+) {
   const decisions = [
     {
       data: records.win,
@@ -1539,16 +1599,23 @@ function validateRecords(records) {
     },
   ];
 
-  for (const decision of decisions) {
-    const hasName =
-      decision.data.name.trim() !== "";
-    const hasCount =
-      decision.data.count !== "";
+ for (const decision of decisions) {
+  const hasName =
+    decision.data.name.trim() !== "";
+  const hasCount =
+    decision.data.count !== "";
 
-    if (hasName !== hasCount) {
-      return `${decision.label}は、投手名と今季記録の両方を入力してください。`;
-    }
+  const isInterleagueOpponent =
+    isInterleague &&
+    decision.data.side === "opponent";
+
+  if (
+    !isInterleagueOpponent &&
+    hasName !== hasCount
+  ) {
+    return `${decision.label}は、投手名と今季記録の両方を入力してください。`;
   }
+}
 for (
   let index = 0;
   index < records.pitchingStats.length;
@@ -1629,22 +1696,28 @@ for (
 }
 
   for (
-    let index = 0;
-    index < records.holds.length;
-    index += 1
+  let index = 0;
+  index < records.holds.length;
+  index += 1
+) {
+  const hold = records.holds[index];
+
+  const hasName = hold.name.trim() !== "";
+  const hasCount = hold.count !== "";
+
+  const isInterleagueOpponent =
+    isInterleague &&
+    hold.side === "opponent";
+
+  if (
+    !isInterleagueOpponent &&
+    hasName !== hasCount
   ) {
-    const hold = records.holds[index];
-
-    const hasName = hold.name.trim() !== "";
-    const hasCount = hold.count !== "";
-
-    if (hasName !== hasCount) {
-      return `${
-        index + 1
-      }人目のホールドは、投手名と今季H数の両方を入力してください。`;
-    }
+    return `${
+      index + 1
+    }人目のホールドは、投手名と今季H数の両方を入力してください。`;
   }
-
+}
  for (
   let index = 0;
   index < records.battingStats.length;
@@ -1741,7 +1814,10 @@ function cleanDecision(decision) {
         ? decision.playerId
         : null,
     name: decision.name.trim(),
-    count: Number(decision.count),
+    count:
+      decision.count === ""
+        ? ""
+        : Number(decision.count),
   };
 }
 

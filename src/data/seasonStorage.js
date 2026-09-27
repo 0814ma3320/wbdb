@@ -173,6 +173,7 @@ export function getGameType(game) {
 
   if (
     gameType === "regular" ||
+    gameType === "interleague" ||
     gameType === "ps1st" ||
     gameType === "psFinal"
   ) {
@@ -187,10 +188,14 @@ export function getRegularSeasonGames(games) {
     return [];
   }
 
-  return games.filter(
-    (game) =>
-      getGameType(game) === "regular"
-  );
+  return games.filter((game) => {
+    const gameType = getGameType(game);
+
+    return (
+      gameType === "regular" ||
+      gameType === "interleague"
+    );
+  });
 }
 
 export function getPostseasonGames(games) {

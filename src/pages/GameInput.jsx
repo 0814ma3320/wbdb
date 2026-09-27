@@ -65,10 +65,10 @@ const calculatedOpponentScore =
   return;
 }
 
-    if (!opponent) {
-      setError("対戦相手を選択してください。");
-      return;
-    }
+    if (gameType !== "interleague" && !opponent) {
+  setError("対戦相手を選択してください。");
+  return;
+}
 
     if (
   currentSeason === 1 &&
@@ -232,44 +232,62 @@ opponentScore:
     }}
     style={inputStyle}
   >
-    <option value="regular">
-      レギュラーシーズン
-    </option>
+   <option value="regular">
+  レギュラーシーズン
+</option>
 
-    <option value="ps1st">
-      PS 1st
-    </option>
+<option value="interleague">
+  交流戦
+</option>
 
-    <option value="psFinal">
-      PS FINAL
-    </option>
+<option value="ps1st">
+  PS 1st
+</option>
+
+<option value="psFinal">
+  PS FINAL
+</option>
   </select>
 </div>
         <div style={formGroupStyle}>
-          <label htmlFor="opponent" style={labelStyle}>
-            対戦相手
-          </label>
+  <label htmlFor="opponent" style={labelStyle}>
+    対戦相手
+  </label>
 
-          <select
-            id="opponent"
-            value={opponent}
-            onChange={(event) => {
-              setOpponent(event.target.value);
-              setError("");
-            }}
-            style={inputStyle}
-          >
-            <option value="">
-              選択してください
-            </option>
+  {gameType === "interleague" ? (
+    <input
+      id="opponent"
+      type="text"
+      value={opponent}
+      placeholder="相手チーム名を入力（未入力でも可）"
+      onChange={(event) => {
+        setOpponent(event.target.value);
+        setError("");
+      }}
+      style={inputStyle}
+    />
+  ) : (
+    <select
+      id="opponent"
+      value={opponent}
+      onChange={(event) => {
+        setOpponent(event.target.value);
+        setError("");
+      }}
+      style={inputStyle}
+    >
+      <option value="">
+        選択してください
+      </option>
 
-            {opponents.map((team) => (
-              <option key={team} value={team}>
-                {team}
-              </option>
-            ))}
-          </select>
-        </div>
+      {opponents.map((team) => (
+        <option key={team} value={team}>
+          {team}
+        </option>
+      ))}
+    </select>
+  )}
+</div>
 
         <div style={formGroupStyle}>
           <span style={labelStyle}>

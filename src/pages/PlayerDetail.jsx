@@ -168,50 +168,61 @@ const isPitcher =
           </tr>
         </tbody>
       </table>
-{!isPitcher && (
-  <>
-    <h2 style={sectionTitleStyle}>
-      スタメン起用
-    </h2>
+<>
+  <h2 style={sectionTitleStyle}>
+    スタメン起用
+  </h2>
 
-    <p>
-      打順：
-      {Object.entries(
-        regularLineupUsage.battingOrders
+  <p>
+    打順：
+    {Object.entries(
+      regularLineupUsage.battingOrders
+    )
+      .sort(
+        ([a], [b]) => Number(a) - Number(b)
       )
-        .sort(
-          ([a], [b]) => Number(a) - Number(b)
-        )
-        .map(
-          ([order, games]) =>
-            `${order}番 ${games}試合`
-        )
-        .join(" ／ ") || "データなし"}
-    </p>
+      .map(
+        ([order, games]) =>
+          `${order}番 ${games}試合`
+      )
+      .join(" ／ ") || "データなし"}
+  </p>
 
-    <p>
-      守備位置：
-      {Object.entries(
-        regularLineupUsage.positions
+  <p>
+    守備位置：
+    {Object.entries(
+      regularLineupUsage.positions
+    )
+      .map(
+        ([position, games]) =>
+          `${position} ${games}試合`
       )
-        .map(
-          ([position, games]) =>
-            `${position} ${games}試合`
-        )
-        .join(" ／ ") || "データなし"}
-    </p>
-  </>
-)}
+      .join(" ／ ") || "データなし"}
+  </p>
+</>
       <h2 style={sectionTitleStyle}>
   Season {currentSeason} 成績
 </h2>
 
-      {isPitcher ? (
-  <PitchingStats
-    stats={stats}
-    recentStats={recentPitchingStats}
-    recentLogs={recentPitchingLogs}
-  />
+     
+{isPitcher ? (
+  <>
+    <PitchingStats
+      stats={stats}
+      recentStats={recentPitchingStats}
+      recentLogs={recentPitchingLogs}
+    />
+
+    <h2 style={sectionTitleStyle}>
+      打撃成績
+    </h2>
+
+    <BattingStats
+      stats={stats}
+      recentStats={recentBattingStats}
+      recentLogs={recentBattingLogs}
+    />
+  </>
 ) : (
   <BattingStats
     stats={stats}

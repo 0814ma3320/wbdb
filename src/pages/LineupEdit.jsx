@@ -21,6 +21,7 @@ const positionOptions = [
   { value: "中", label: "中堅手" },
   { value: "右", label: "右翼手" },
   { value: "指", label: "指名打者" },
+  { value: "投", label: "投手" },
 ];
 
 export default function LineupEdit() {
@@ -53,27 +54,44 @@ export default function LineupEdit() {
   }
 const gameSeason = getGameSeason(game);
 
+const isInterleagueVisitor =
+  game?.gameType === "interleague" &&
+  game?.homeAway === "visitor";
+
 const players = getPlayersForSeason(
   gameSeason
 )
   .filter(
     (player) =>
       player.teamName === "和桐バブルス" &&
-      player.category === "野手"
+      (
+        isInterleagueVisitor ||
+        player.category === "野手"
+      )
   )
   .sort(
     (a, b) =>
       Number(a.number) - Number(b.number)
   );
+  const lineupPositionOptions =
+  isInterleagueVisitor
+    ? positionOptions.filter(
+        (position) =>
+          position.value !== "指"
+      )
+    : positionOptions.filter(
+        (position) =>
+          position.value !== "投"
+      );
   function handlePlayerChange(
-    index,
-    playerNumber
-  ) {
-    const selectedPlayer = players.find(
-      (player) =>
-        String(player.number) ===
-        String(playerNumber)
-    );
+  index,
+  playerId
+) {
+  const selectedPlayer = players.find(
+    (player) =>
+      String(player.id) ===
+      String(playerId)
+  );
 
     setLineup((current) =>
       current.map((row, rowIndex) => {
@@ -124,8 +142,11 @@ const players = getPlayersForSeason(
   }
 
   function handleSave() {
-    const validationError =
-      validateLineup(lineup);
+   const validationError =
+  validateLineup(
+    lineup,
+    lineupPositionOptions
+  );
 
     if (validationError) {
       setError(validationError);
@@ -194,14 +215,18 @@ const players = getPlayersForSeason(
       </div>
 
       <section style={noticeStyle}>
-        <strong>DH制</strong>
+  <strong>
+    {isInterleagueVisitor
+      ? "DH制なし"
+      : "DH制"}
+  </strong>
 
-        <p style={{ marginBottom: 0 }}>
-          投手はスタメンに含めません。
-          捕・一・二・三・遊・左・中・右・指を
-          1人ずつ登録してください。
-        </p>
-      </section>
+  <p style={{ marginBottom: 0 }}>
+    {isInterleagueVisitor
+      ? "捕・一・二・三・遊・左・中・右・投を1人ずつ登録してください。"
+      : "投手はスタメンに含めません。捕・一・二・三・遊・左・中・右・指を1人ずつ登録してください。"}
+  </p>
+</section>
 
       {error && (
         <div style={errorStyle}>
@@ -242,16 +267,16 @@ const players = getPlayersForSeason(
                 </option>
 
                 {players.map((player) => (
-                  <option
-                    key={player.number}
-                    value={String(
-                      player.number
-                    )}
-                  >
-                    {player.number}　
-                    {player.name}
-                  </option>
-                ))}
+  <option
+    key={player.id}
+    value={String(
+      player.id
+    )}
+  >
+    {player.number}　
+    {player.name}
+  </option>
+))}
               </select>
             </div>
 
@@ -274,8 +299,8 @@ const players = getPlayersForSeason(
                   守備位置を選択
                 </option>
 
-                {positionOptions.map(
-                  (position) => (
+                {lineupPositionOptions.map(
+  (position) => (
                     <option
                       key={position.value}
                       value={position.value}
@@ -347,15 +372,16 @@ function createInitialLineup(savedLineup) {
           savedRow?.playerName ?? "",
 
         position:
-          savedRow?.position === "投"
-            ? ""
-            : savedRow?.position ?? "",
+  savedRow?.position ?? "",
       };
     }
   );
 }
 
-function validateLineup(lineup) {
+function validateLineup(
+  lineup,
+  requiredPositionOptions
+) {
   const incompleteRow = lineup.find(
     (row) =>
       !row.playerId ||
@@ -383,16 +409,16 @@ function validateLineup(lineup) {
   );
 
   if (
-    new Set(positions).size !==
-    positionOptions.length
-  ) {
-    return "同じ守備位置が複数登録されています。";
-  }
+  new Set(positions).size !==
+  requiredPositionOptions.length
+) {
+  return "同じ守備位置が複数登録されています。";
+}
 
   const requiredPositions =
-    positionOptions.map(
-      (position) => position.value
-    );
+  requiredPositionOptions.map(
+    (position) => position.value
+  );
 
   const missingPosition =
     requiredPositions.find(
@@ -402,10 +428,10 @@ function validateLineup(lineup) {
 
   if (missingPosition) {
     const positionName =
-      positionOptions.find(
-        (position) =>
-          position.value === missingPosition
-      )?.label;
+  requiredPositionOptions.find(
+    (position) =>
+      position.value === missingPosition
+  )?.label;
 
     return `${positionName}が登録されていません。`;
   }
